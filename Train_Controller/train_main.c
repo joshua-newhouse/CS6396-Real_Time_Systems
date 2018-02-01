@@ -5,11 +5,16 @@
 #include "base.h"
 #include "target.h"
 
+/* functions delcaration */
+/* function for print out options of operation in user interface */
 void printMenu(void);
+/* function for setting up absolute speed */
 void setSpeed(Target_ts*);
 
+/* define MAX_SPD as maximun speed, 20 */
 #define MAX_SPD 20
 
+/* main function */
 int main(void) {
 	/* Connect to base controller */
 	Base_ts base;
@@ -19,13 +24,16 @@ int main(void) {
 	Target_ts train;
 	uint8_t current_speed = 0;
 	target_init(&train, 23, TRAIN, &current_speed);
-
+        
+	/* print out manu of operation options */
 	printMenu();
 
+	/* setting up run as true for continuously inquiring user input selection of operation */
 	int run = 1;
 	while(run) {
+		/* read chosen option from user */
 		char input = getch();
-
+	
 		switch(input) {
 		case 0:
 			break;
