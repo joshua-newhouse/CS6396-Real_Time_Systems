@@ -1,6 +1,7 @@
 /*******************************************************************************
 *	train_main.c
 *	Author: Joshua Newhouse
+*	Modified: Guy Maor, Ben Weng
 *
 *	Tab width: 4
 *
@@ -45,7 +46,8 @@ int main(void) {
 	/* print out manu of operation options */
 	printMenu();
 
-	/* setting up run as true for continuously inquiring user input selection of operation */
+	/* setting up run as true for continuously inquiring user input selection of
+		operation */
 	int run = 1;
 	while(run) {
 		/* read chosen option from user */
@@ -65,17 +67,10 @@ int main(void) {
 			base_sendData(&base, target_getCommand(&train));
 			break;
 		case '*':
-			/* The user is first asked for a speed. Then, the train is sent a command to set its speed to what was given by the user. If the train reaches the maximum speed, the horn is honked. */
+			/* The user is first asked for a speed. Then, the train is sent a
+				command to set its speed to what was given by the user. */
 			setSpeed(&train);
 			base_sendData(&base, target_getCommand(&train));
-			/////////////////////////////////////////////////////////
-                        // Horn when reaching the maximum speed
-                        if(current_speed == MAX_SPD)
-                	{
-                    		target_setCommand(&train, TRAIN_HORN1,0);
-                   		base_sendData(&base, target_getCommand(&train));
-               		}
-            		/////////////////////////////////////////////////////////
 			printMenu();
 			break;
 		case '+':
@@ -95,12 +90,14 @@ int main(void) {
 			}
 			break;
 		case ' ':
-			/* The train is sent a command to use its breaks. This does not set the speed back to 0. */
+			/* The train is sent a command to use its breaks. This does not set
+				the speed back to 0. */
 			target_setCommand(&train, TRAIN_BRAKE, 0);
 			base_sendData(&base, target_getCommand(&train));
 			break;
 		case 'b':
-			/* The train is sent a command to boost its speed. The train will return to its original speed once the boost has ended. */
+			/* The train is sent a command to boost its speed. The train will
+				return to its original speed once the boost has ended. */
 			target_setCommand(&train, TRAIN_BOOST, 0);
 			base_sendData(&base, target_getCommand(&train));
 			break;
@@ -126,13 +123,15 @@ int main(void) {
 			base_sendData(&base, target_getCommand(&train));
 			break;
 		case 't':
-			/* The train is sent a command to toggle its direction. This sets the speed to 0. */
+			/* The train is sent a command to toggle its direction. This sets
+				the speed to 0. */
 			target_setCommand(&train, TRAIN_TOGGLE, 0);
 			base_sendData(&base, target_getCommand(&train));
 			current_speed = 0;
 			break;
 		case 'r':
-			/* The train is sent a command to toggle its direction. The original speed is kept. */
+			/* The train is sent a command to toggle its direction. The original
+				speed is kept. */
 			target_setCommand(&train, TRAIN_TOGGLE, 0);
 			base_sendData(&base, target_getCommand(&train));
 			target_setCommand(&train, TRAIN_ABSSPD, current_speed);
@@ -143,11 +142,18 @@ int main(void) {
 			getchar();
 			printMenu();
 		}
+
+		/* If the train reaches the maximum speed, the horn is honked. */
+		if(current_speed == MAX_SPD) {
+			target_setCommand(&train, TRAIN_HORN1, 0);
+			base_sendData(&base, target_getCommand(&train));
+		}
 	}
 
 	base_close(&base);
 	exit(EXIT_SUCCESS);
 }
+
 /*******************************************************************************
 *	void printMenu(void) 
 *
@@ -155,7 +161,6 @@ int main(void) {
 *					
 *
 *******************************************************************************/
-
 void printMenu(void) {
 	system("cls");
 	printf("Train Controller; select action:\n"
@@ -174,18 +179,18 @@ void printMenu(void) {
 		"q:\tQuit\n"
 	);
 }
+
 /*******************************************************************************
 *	void setSpeed(Target_ts* train) 
 *
-*	Description:	Prompts the user for a train speed. Then, it sets the speed for the train.
-*					on the target passed as the argument.
+*	Description:	Prompts the user for a train speed. Then, it sets the speed
+*					for the train on the target passed as the argument.
 *
 *	Parameters:
-*	train		The target object that contains the train information needed for controllin the train.
-*
+*	train		The target object that contains the train information needed for
+*				controlling the train.
 *	
 *******************************************************************************/
-
 void setSpeed(Target_ts* train) {
 	uint8_t spd;
 	printf("Enter speed (valid range 0 to 20): \n");

@@ -1,9 +1,56 @@
+/*******************************************************************************
+*	base.c
+*	Author: Joshua Newhouse
+*
+*	Tab width: 4
+*
+*	Purpose:
+*
+*	This implements the base.h interface.
+*
+*	Procedures:
+*
+*	base_init		Initializes a Base_ts.
+*	base_close		Closes a Base_ts.
+*	base_sendData	Sends bytes to the Base_ts.
+*******************************************************************************/
 #include <windows.h>
 #include <stdio.h>
 
 #include "base.h"
 
+/*******************************************************************************
+*	int base_init(Base_ts* base, char* comPort)
+*
+*	Description: Initializes a base object using the arguments passed.
+*		The comm port passed as comPort is opened and set for read/write.
+*
+*		The device parameters for the base controller are set per the
+*		documentation:
+*			9600 baud
+*			1 start bit
+*			1 stop bit
+*			no parity
+*
+*		The comm port timeouts are set to a constant of 50 ms with a multiplier
+*		of 10.
+*
+*	Parameters:
+*
+*	base		I/O	A pointer to the base object to initialize.
+*	comPort		I/P	The comm port on which to communicate with the base.
+*
+*	Returns:
+*	int			If the base is initialized successfully returns 1, 0 otherwise.
+*				Failure may occur due to:
+*					not being able to open a connection on comPort,
+*					not being able to poll the connected device for its	state,
+*					not being able to set the device parameters,
+*					not being able to set the com port timeouts. 
+*******************************************************************************/
 int base_init(Base_ts* base, char* comPort) {
+	if(base == NULL) return 1;
+
 	/* Open the serial port */
 	fprintf(stderr, "Opening serial port...");
 	base->hSerial = CreateFile(comPort, GENERIC_READ | GENERIC_WRITE, 0, NULL,
@@ -50,6 +97,19 @@ int base_init(Base_ts* base, char* comPort) {
 	return 0;
 }
 
+/*******************************************************************************
+*	void base_close(Base_ts* base)
+*
+*	Description: Closes the base object
+*
+*		Closes the connection to the underlying communication port pointed to by
+*		hSerial.
+*
+*	Parameters:
+*
+*	base		I/O	A pointer to the base object to close.
+* 
+*******************************************************************************/
 void base_close(Base_ts* base) {
 	fprintf(stderr, "Closing serial port...");
 
@@ -59,6 +119,24 @@ void base_close(Base_ts* base) {
 	fprintf(stderr, "OK\n");
 }
 
+/*******************************************************************************
+*	int base_sendData(Base_ts* base, int8_t bytesToSend[])
+*
+*	Description:	Sends the data bytes passed as the second argument to the
+*					base object passed as the first argument.
+*
+*		The data is sent by passing the bytes to a WriteFile call on the
+*		comm port pointed to by	hSerial. 
+*
+*	Parameters:
+*
+*	base			I/P	A pointer to the base object to send data to.
+*	bytesToSend		I/P	Array of bytes to send to the base object.
+*
+*	Returns:
+*	int			If the bytes are sent successfully returns 1, 0 otherwise.
+*				Failure may occur due to a failure of the call to WriteFile. 
+*******************************************************************************/
 int base_sendData(Base_ts* base, int8_t bytesToSend[]) {
 	int ret_val = 0;
 	DWORD bytes_written = 0;
