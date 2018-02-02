@@ -48,6 +48,14 @@ int main(void) {
 		case '*':
 			setSpeed(&train);
 			base_sendData(&base, target_getCommand(&train));
+			/////////////////////////////////////////////////////////
+                        // Horn when reaching the maximum speed
+                        if(current_speed == MAX_SPD)
+                	{
+                    		target_setCommand(&train, TRAIN_HORN1,0);
+                   		base_sendData(&base, target_getCommand(&train));
+               		}
+            		/////////////////////////////////////////////////////////
 			printMenu();
 			break;
 		case '+':
