@@ -1,7 +1,7 @@
 /*******************************************************************************
 *	train_main.c
 *	Author: Joshua Newhouse
-*	Modified: Guy Maor, Ben Weng
+*	Modified: Guy Maor, Bang-Li Weng
 *
 *	Tab width: 4
 *
